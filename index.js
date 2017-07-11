@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { View, ListView, Dimensions } from 'react-native';
+import { View, FlatList, Dimensions } from 'react-native';
 import { chunkArray } from './utils';
 
 class SuperGrid extends Component {
@@ -36,7 +36,7 @@ class SuperGrid extends Component {
     };
   }
 
-  renderRow(data, sectionId, rowId) {
+  renderRow({item}, sectionId, rowId) {
     const { itemWidth, spacing, containerWidth, fixed } = this.state;
 
     const rowStyle = {
@@ -60,7 +60,7 @@ class SuperGrid extends Component {
 
     return (
       <View style={rowStyle}>
-        {(data || []).map((item, i) => (
+        {(item || []).map((item, i) => (
           <View key={`${rowId}_${i}`} style={columnStyle}>
             <View style={itemStyle}>
               {this.props.renderItem(item, i)}
@@ -76,14 +76,13 @@ class SuperGrid extends Component {
     const { itemsPerRow } = this.state;
 
     const rows = chunkArray(items, itemsPerRow);
-    const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
 
     return (
-      <ListView
+      <FlatList
         style={[{ paddingTop: spacing }, style]}
         onLayout={this.onLayout}
-        dataSource={ds.cloneWithRows(rows)}
-        renderRow={this.renderRow}
+        data={rows}
+        renderItem={this.renderRow}
         {...props}
       />
     );
